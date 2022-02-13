@@ -19,11 +19,18 @@ resource "google_compute_network" "vpc_network" {
   auto_create_subnetworks = true
 }
 
+resource "google_compute_disk" "minecraft-disk" {
+  name = "minecraft-disk"
+  type = "pd-ssd"
+  zone = "europe-west1-b"
+  size = "50"
+}
+
 resource "google_compute_instance" "vm_instance" {
   name         = "mc-server"
-  machine_type = "f1-micro"
+  machine_type = "e2-standard-2"
   zone         = "europe-west1-b"
-  tags         = ["mc", "terraform"]
+  tags         = ["mc", "terraform", "allow-ssh"]
 
   boot_disk {
     initialize_params {
@@ -32,15 +39,15 @@ resource "google_compute_instance" "vm_instance" {
     }	
   }
 
-  scratch_disk {
+  attached_disk {
+    source = "minecraft-disk"
     device_name = "minecraft-disk"
-    type = "ssd-pd"
-    interface = "SCSI"
 
+  } 
 
   network_interface {
     network = "mc-net"
-    subnetwork = "default"
+    subnetwork = "mc-net"    
     access_config {
     }
   }
