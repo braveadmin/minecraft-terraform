@@ -41,3 +41,5 @@ This repository is intended to deploy a Minecraft Server on Google Cloud Platfor
 
 - Allow to set an Static IP
 
+- Allow to load saved game
+
