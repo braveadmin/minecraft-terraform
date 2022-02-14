@@ -39,4 +39,5 @@ This repository is intended to deploy a Minecraft Server on Google Cloud Platfor
 
 - add option to customize server.properties file
 
+- Allow to set an Static IP
 
