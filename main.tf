@@ -66,6 +66,9 @@ resource "google_compute_instance" "mc-server" {
     access_config {
     }
   }
+  
+  metadata_startup_script = file("install.sh")
+
   depends_on = [google_compute_disk.minecraft-disk, google_compute_network.mc-net]
 }
 
