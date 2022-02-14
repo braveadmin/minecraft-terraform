@@ -14,9 +14,24 @@ provider "google" {
   region  = var.region
 }
 
-resource "google_compute_network" "vpc_network" {
+resource "google_compute_network" "mc-net" {
   name = "mc-net"
   auto_create_subnetworks = true
+}
+
+resource "google_compute_firewall" "mc-fw-rules" {
+    name    = "mc-fw-rules"
+    description = "Allowing necessary ports for Minecraft Server"
+    priority = "1000"
+    direction = "INGRESS"
+    network = "projects/wave32-webhelp-adriab/regions/europe-west1-b/subnetworks/mc-net"
+    source_ranges = ["0.0.0.0/0"]
+    source_tags = ["mc"]
+    allow {
+        protocol = "tcp"
+        ports    = ["22", "25565"]
+    }
+    depends_on = [google_compute_network.mc-net]
 }
 
 resource "google_compute_disk" "minecraft-disk" {
@@ -26,11 +41,11 @@ resource "google_compute_disk" "minecraft-disk" {
   size = "50"
 }
 
-resource "google_compute_instance" "vm_instance" {
+resource "google_compute_instance" "mc-server" {
   name         = "mc-server"
   machine_type = "e2-standard-2"
   zone         = "europe-west1-b"
-  tags         = ["mc", "terraform", "allow-ssh"]
+  tags         = ["mc", "terraform"]
 
   boot_disk {
     initialize_params {
@@ -51,5 +66,6 @@ resource "google_compute_instance" "vm_instance" {
     access_config {
     }
   }
+  depends_on = [google_compute_disk.minecraft-disk, google_compute_network.mc-net]
 }
 

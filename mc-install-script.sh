@@ -8,11 +8,16 @@
 
 - 50GB SSD blank disk named tagged
 
-
 '
 
-
 #Steps:
+
+# check if the startup script has been already executed
+
+if [ -f .startup_script_executed ]; then
+	echo "script already executed"
+	exit 0;
+fi
 
 # create directory
 
@@ -57,8 +62,6 @@ cd /home/minecraft
 
 echo "downloading minecraft server file..."
 
-sudo su
-
 curl https://launcher.mojang.com/v1/objects/125e5adf40c659fd3bce3e66e67a16bb49ecc1b9/server.jar > minecraft_server.1.18.1.jar
 
 echo "starting server for first time..."
@@ -69,8 +72,14 @@ java -Xms1G -Xmx7G -jar minecraft_server.1.18.1.jar nogui
 
 echo "signing EULA..."
 
-sed -i 's/false/true/g' eula.xt
+sed -i 's/false/true/g' /home/minecraft/eula.txt
 
-echo "starting Minecraft Server..."
+echo "starting Minecraft Server in background. Process name is 'mcs'..."
 
 screen -S mcs java -Xms1G -Xmx7G -jar minecraft_server.1.18.1.jar nogui
+
+cd
+
+echo "this file prevents the startup script to be furhter than instance first boot." > .startup_script_executed
+
+echo "installation completed!"
